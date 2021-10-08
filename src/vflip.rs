@@ -1,7 +1,7 @@
 
 // constants
-const SIZE: usize = 5;
-const VALS: [u8; 4] = [0,1,2,3];
+pub const SIZE: usize = 5;
+pub const VALS: [u8; 4] = [0,1,2,3];
 
 // custom types for application
 pub type Board = [[Option<u8>; SIZE]; SIZE];
@@ -89,7 +89,7 @@ pub fn validate(right: &Header, bottom: &Header, board: &Board) -> bool
 }
 
 // recursively solves the puzzle
-pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, column: usize, solutions: &mut Vec<Board>) -> Option<Board>
+pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, column: usize, solutions: &mut Vec<Board>)
 {
   // base case
   if row >= SIZE || column >= SIZE
@@ -100,17 +100,14 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
     // print the solution
     print(&board);
 
-    // return the board
-    return Some(board);
+    // break out of the function
+    return;
   }
 
   // check of the cell already has a value
   match board[row][column] {
     None =>
     {
-      // init the result
-      let mut result = None;
-
       // try all values of board
       for val in VALS
       {
@@ -118,17 +115,14 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
         board[row][column] = Some(val);
 
         // validate the board
-        if result == None && validate(right, bottom, &board)
+        if validate(right, bottom, &board)
         {
           // recursive call
           let next_column = (column + 1) % SIZE;
           let next_row = if next_column < column { row + 1 } else { row };
-          result = solve(right, bottom, board, next_row, next_column, solutions);
+          solve(right, bottom, board, next_row, next_column, solutions);
         }
       }
-
-      // if couldn't solve the puzzle, return false
-      return result;
     },
     Some(_) =>
     {
@@ -173,3 +167,6 @@ pub fn print(board: &Board)
   // print the string
   println!("{}", print_string);
 }
+
+// do useful aggregation on the boards
+//pub fn aggregate(boards: Vec<Board>) {}

@@ -7,15 +7,15 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'voltorb_flip'",
+      "name": "Debug executable 'vflip'",
       "cargo": {
         "args": [
           "build",
-          "--bin=voltorb_flip",
-          "--package=voltorb_flip"
+          "--bin=vflip",
+          "--package=vflip"
         ],
         "filter": {
-          "name": "voltorb_flip",
+          "name": "vflip",
           "kind": "bin"
         }
       },
@@ -25,16 +25,16 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in executable 'voltorb_flip'",
+      "name": "Debug unit tests in executable 'vflip'",
       "cargo": {
         "args": [
           "test",
           "--no-run",
-          "--bin=voltorb_flip",
-          "--package=voltorb_flip"
+          "--bin=vflip",
+          "--package=vflip"
         ],
         "filter": {
-          "name": "voltorb_flip",
+          "name": "vflip",
           "kind": "bin"
         }
       },
