@@ -1,0 +1,45 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'voltorb_flip'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=voltorb_flip",
+          "--package=voltorb_flip"
+        ],
+        "filter": {
+          "name": "voltorb_flip",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'voltorb_flip'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=voltorb_flip",
+          "--package=voltorb_flip"
+        ],
+        "filter": {
+          "name": "voltorb_flip",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
