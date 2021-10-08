@@ -89,39 +89,57 @@ pub fn validate(right: &Header, bottom: &Header, board: &Board) -> bool
 }
 
 // recursively solves the puzzle
-pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, column: usize) -> Option<Board>
+pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, column: usize, solutions: &mut Vec<Board>) -> Option<Board>
 {
   // base case
   if row >= SIZE || column >= SIZE
   {
+    // add the board to the solutions
+    solutions.push(board);
+
+    // print the solution
+    print(&board);
+
+    // return the board
     return Some(board);
-    // TODO: start thread that prints board
   }
 
-  // init the result
-  let mut result = None;
-
-  // try all values of board
-  for val in VALS
-  {
-    // set the cell in the board
-    board[row][column] = Some(val);
-
-    // validate the board
-    if result == None && validate(right, bottom, &board)
+  // check of the cell already has a value
+  match board[row][column] {
+    None =>
     {
-      print(&board);
+      // init the result
+      let mut result = None;
 
+      // try all values of board
+      for val in VALS
+      {
+        // set the cell in the board
+        board[row][column] = Some(val);
+
+        // validate the board
+        if result == None && validate(right, bottom, &board)
+        {
+          // recursive call
+          let next_column = (column + 1) % SIZE;
+          let next_row = if next_column < column { row + 1 } else { row };
+          result = solve(right, bottom, board, next_row, next_column, solutions);
+        }
+      }
+
+      // if couldn't solve the puzzle, return false
+      return result;
+    },
+    Some(_) =>
+    {
       // recursive call
       let next_column = (column + 1) % SIZE;
       let next_row = if next_column < column { row + 1 } else { row };
-      result = solve(right, bottom, board, next_row, next_column)
+      return solve(right, bottom, board, next_row, next_column, solutions);
     }
   }
 
-
-  // if couldn't solve the puzzle, return false
-  return result;
+  
 }
 
 

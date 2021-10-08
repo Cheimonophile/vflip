@@ -19,15 +19,15 @@ fn main()
     ];
     let board = vflip::init();
 
+    // create vector to store the solutions
+    let mut solutions: Vec<vflip::Board> = Vec::new();
+
+    // print solving
+    println!("\nSolving...\n");
+
     // solve the board
-    let solved = vflip::solve(&right, &bottom, board, 0, 0);
+    vflip::solve(&right, &bottom, board, 0, 0, &mut solutions);
 
-    // determine if the board could be solved
-    match solved
-    {
-        None => { println!("The board couldn't be solved.\n"); }
-        Some(solved) => { vflip::print(&solved); }
-    }
-
-    println!("Hello, world!");
+    // print done
+    println!("Done!\n");
 }
