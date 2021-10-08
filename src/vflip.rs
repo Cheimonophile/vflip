@@ -11,7 +11,7 @@ pub type Header = [Label; SIZE];
 // init the game board
 pub fn init() -> Board
 {
-  [[None;5];5]
+  [[None;SIZE];SIZE]
 }
 
 // validate the board
@@ -169,4 +169,58 @@ pub fn print(board: &Board)
 }
 
 // do useful aggregation on the boards
-//pub fn aggregate(boards: Vec<Board>) {}
+pub fn aggregate(boards: &Vec<Board>) {
+
+  // get the number of voltorbs
+  let mut num_voltorbs = [[0;SIZE];SIZE];
+  let mut num_multipliers = [[0;SIZE];SIZE];
+
+  // iterate over every board in the vector
+  for board in boards {
+    for row in 0..SIZE {
+      for column in 0..SIZE
+      {
+        // get the value of the board
+        match board[row][column] {
+          None => {}
+          Some(val) =>
+          {
+            // if the value is zero
+            if val == 0 {
+              num_voltorbs[row][column] += 1;
+            }
+
+            // if the value is greater than one
+            if val > 1 {
+              num_multipliers[row][column] += 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // print the number of voltorbs
+  println!("The number of possible tables that have a voltorb in each cell:\n");
+  let mut num_voltorbs_string = String::new();
+  for row in num_voltorbs {
+    for cell in row {
+      num_voltorbs_string.push_str(format!("{: >3}", cell).as_str());
+      num_voltorbs_string.push(' ');
+    }
+    num_voltorbs_string.push('\n');
+  }
+  println!("{}",num_voltorbs_string);
+
+  // print the number of multipliers
+  println!("The number of possible tables that have a multiplier in each cell:\n");
+  let mut num_multipliers_string = String::new();
+  for row in num_multipliers {
+    for cell in row {
+      num_multipliers_string.push_str(format!("{: >3}", cell).as_str());
+      num_multipliers_string.push(' ');
+    }
+    num_multipliers_string.push('\n');
+  }
+  println!("{}",num_multipliers_string);
+}

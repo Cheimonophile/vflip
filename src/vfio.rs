@@ -7,9 +7,6 @@ pub fn get_command() -> io::Result<String>
   let mut command = String::new();
   io::stdin().read_line(&mut command)?;
 
-  // print a new line
-  println!();
-
   // cleanup the string
   command = String::from(command.trim()).to_lowercase();
 
