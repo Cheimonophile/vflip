@@ -7,6 +7,8 @@ type Res<T> = Result<T, Box<dyn std::error::Error>>;
 const WIDTH: usize = 80;
 const HEIGHT: usize = 20;
 
+use std::io::{Read};
+
 fn main()
 {
     // create constants
@@ -48,9 +50,23 @@ fn main()
         }
     };
 
-    // print my name
+    // the board
     display.render((2,3), vflip::print(&board));
     std::thread::sleep(std::time::Duration::from_millis(100));
+
+    // print the voltorb status
+    let mut solutions = Vec::new();
+    vflip::solve(&right, &bottom, board, 0, 0, &mut solutions);
+    display.render((2,33), vflip::aggregate(&solutions, &board));
+
+    // iterate over every char in stdin
+    let mut buf: [u8;1] = [0];
+    loop
+    {
+        std::io::stdin().read_exact(&mut buf);
+        display.render((0,0), String::from(buf[0] as char));
+    }
+        
 
 
     // join with the thread

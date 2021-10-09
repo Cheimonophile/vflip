@@ -180,7 +180,7 @@ pub fn print(board: &Board) -> String
 
 
 // do useful aggregation on the boards
-pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
+pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
 
   // get the number of voltorbs
   let mut num_voltorbs = [[0;SIZE];SIZE];
@@ -212,7 +212,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
   }
 
   // print the number of voltorbs
-  println!("The number of possible tables that have a voltorb in each cell:\n");
+  //println!("The number of possible tables that have a voltorb in each cell:\n");
   let mut num_voltorbs_string = String::new();
   for row in 0..SIZE {
     for column in 0..SIZE
@@ -230,7 +230,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
     }
     num_voltorbs_string.push('\n');
   }
-  println!("{}",num_voltorbs_string);
+  //println!("{}",num_voltorbs_string);
 
   // print the number of multipliers
   println!("The number of possible tables that have a multiplier in each cell:\n");
@@ -253,7 +253,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
     }
     num_multipliers_string.push('\n');
   }
-  println!("{}",num_multipliers_string);
+  //println!("{}",num_multipliers_string);
 
 
   // for every cell, get its possible values
@@ -275,7 +275,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
   }
 
   // print the possible values of every cell
-  println!("The possible values of every cell:\n");
+  //println!("The possible values of every cell:\n");
   let mut possible_values_string = String::new();
   for row in possible_values {
     for cell in row
@@ -290,5 +290,8 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
     }
     possible_values_string.push('\n');
   }
-  println!("{}",possible_values_string);
+  //println!("{}",possible_values_string);
+
+  // return the num_voltorbs_string
+  num_voltorbs_string
 }
