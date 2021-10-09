@@ -1,4 +1,7 @@
 
+// uses
+use std::collections::BTreeSet;
+
 // constants
 pub const SIZE: usize = 5;
 pub const VALS: [u8; 4] = [0,1,2,3];
@@ -117,6 +120,9 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
         // validate the board
         if validate(right, bottom, &board)
         {
+          // print the intermediate board
+          print(&board);
+
           // recursive call
           let next_column = (column + 1) % SIZE;
           let next_row = if next_column < column { row + 1 } else { row };
@@ -132,18 +138,20 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
       return solve(right, bottom, board, next_row, next_column, solutions);
     }
   }
-
-  
 }
 
 
 // prints the board to the screen
-pub fn print(board: &Board)
+pub fn print(board: &Board) -> String
 {
 
   // create a print string
   let mut print_string = String::new();
   for row in board {
+
+    // add a space at the beginning
+    print_string.push(' ');
+
     for cell in row {
 
       // push the char to the string
@@ -165,11 +173,14 @@ pub fn print(board: &Board)
   }
 
   // print the string
-  println!("{}", print_string);
+  //println!("{}", print_string);
+  return print_string;
 }
 
+
+
 // do useful aggregation on the boards
-pub fn aggregate(boards: &Vec<Board>) {
+pub fn aggregate(boards: &Vec<Board>, game_board: &Board) {
 
   // get the number of voltorbs
   let mut num_voltorbs = [[0;SIZE];SIZE];
@@ -203,9 +214,18 @@ pub fn aggregate(boards: &Vec<Board>) {
   // print the number of voltorbs
   println!("The number of possible tables that have a voltorb in each cell:\n");
   let mut num_voltorbs_string = String::new();
-  for row in num_voltorbs {
-    for cell in row {
-      num_voltorbs_string.push_str(format!("{: >3}", cell).as_str());
+  for row in 0..SIZE {
+    for column in 0..SIZE
+    {
+      // if the game board spot is filled, don't add anything
+      if game_board[row][column] != None || num_multipliers[row][column] < 1
+      {
+        num_voltorbs_string.push_str(format!("{: >3}", '-').as_str());
+      }
+      else
+      {
+        num_voltorbs_string.push_str(format!("{: >3}", num_voltorbs[row][column]).as_str());
+      }
       num_voltorbs_string.push(' ');
     }
     num_voltorbs_string.push('\n');
@@ -215,12 +235,60 @@ pub fn aggregate(boards: &Vec<Board>) {
   // print the number of multipliers
   println!("The number of possible tables that have a multiplier in each cell:\n");
   let mut num_multipliers_string = String::new();
-  for row in num_multipliers {
-    for cell in row {
-      num_multipliers_string.push_str(format!("{: >3}", cell).as_str());
+  for row in 0..SIZE {
+    for column in 0..SIZE
+    {
+      // if the game board spot is filled, don't add anything
+      match game_board[row][column] {
+        None =>
+        {
+          num_multipliers_string.push_str(format!("{: >3}", num_multipliers[row][column]).as_str());
+        }
+        Some(_) =>
+        {
+          num_multipliers_string.push_str(format!("{: >3}", '-').as_str());
+        }
+      }
       num_multipliers_string.push(' ');
     }
     num_multipliers_string.push('\n');
   }
   println!("{}",num_multipliers_string);
+
+
+  // for every cell, get its possible values
+  let mut possible_values: [[BTreeSet<u8>;SIZE];SIZE] = Default::default();
+  for row in 0..SIZE {
+    for column in 0..SIZE {
+      for board in boards
+      {
+        // add the cell value to the set
+        match board[row][column] {
+          None => {}
+          Some(value) =>
+          {
+            possible_values[row][column].insert(value);
+          }
+        }
+      }
+    }
+  }
+
+  // print the possible values of every cell
+  println!("The possible values of every cell:\n");
+  let mut possible_values_string = String::new();
+  for row in possible_values {
+    for cell in row
+    {
+      // create the string of the possible values
+      let mut values_string = String::new();
+      for value in cell {
+        values_string.push_str(value.to_string().as_str());
+      }
+      possible_values_string.push_str(format!("{: >4}", values_string).as_str());
+      possible_values_string.push(' ');
+    }
+    possible_values_string.push('\n');
+  }
+  println!("{}",possible_values_string);
 }
