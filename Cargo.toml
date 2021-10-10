@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 termios = "0.3.3"
+termion = "1.5.5"

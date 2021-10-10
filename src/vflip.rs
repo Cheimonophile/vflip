@@ -101,7 +101,7 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
     solutions.push(board);
 
     // print the solution
-    print(&board);
+    //print_with_headers(right, bottom, &board);
 
     // break out of the function
     return;
@@ -121,7 +121,7 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
         if validate(right, bottom, &board)
         {
           // print the intermediate board
-          print(&board);
+          //print_with_headers(right, bottom, &board);
 
           // recursive call
           let next_column = (column + 1) % SIZE;
@@ -142,20 +142,69 @@ pub fn solve(right: &Header, bottom: &Header, mut board: Board, row: usize, colu
 
 
 // prints the board to the screen
+pub fn print_with_headers(right: &Header, bottom: &Header, board: &Board) -> String
+{
+
+  // create a print string
+  let mut print_string = String::new();
+  for row in 0..board.len() {
+
+    // add a space at the beginning
+    print_string.push(' ');
+
+    for column in 0..board[row].len() {
+
+      // push the char to the string
+      print_string.push(match board[row][column] {
+        Some(0) => '0',
+        Some(1) => '1',
+        Some(2) => '2',
+        Some(3) => '3',
+        Some(_) => '?',
+        None => '-'
+      });
+
+      // add a space at the end
+      print_string.push(' ');
+    }
+
+    // add header info
+    print_string.push_str(format!("   {:0>2} {}",right[row].0, right[row].1).as_str());
+
+    // add a return in between
+    print_string.push('\n');
+  }
+
+  // add the headers to the bottom
+  print_string.push_str("\n");
+  for label in bottom {
+    print_string.push_str(format!("{:0>2} ", label.0).as_str());
+  }
+  print_string.push('\n');
+  for label in bottom {
+    print_string.push_str(format!(" {: >1} ", label.1).as_str());
+  }
+
+  // print the string
+  //println!("{}", print_string);
+  return print_string;
+}
+
+// prints the board to the screen
 pub fn print(board: &Board) -> String
 {
 
   // create a print string
   let mut print_string = String::new();
-  for row in board {
+  for row in 0..board.len() {
 
     // add a space at the beginning
     print_string.push(' ');
 
-    for cell in row {
+    for column in 0..board[row].len() {
 
       // push the char to the string
-      print_string.push(match cell {
+      print_string.push(match board[row][column] {
         Some(0) => '0',
         Some(1) => '1',
         Some(2) => '2',
@@ -220,11 +269,11 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
       // if the game board spot is filled, don't add anything
       if game_board[row][column] != None || num_multipliers[row][column] < 1
       {
-        num_voltorbs_string.push_str(format!("{: >3}", '-').as_str());
+        num_voltorbs_string.push_str(format!("{: >4}", '-').as_str());
       }
       else
       {
-        num_voltorbs_string.push_str(format!("{: >3}", num_voltorbs[row][column]).as_str());
+        num_voltorbs_string.push_str(format!("{: >4}", num_voltorbs[row][column]).as_str());
       }
       num_voltorbs_string.push(' ');
     }
@@ -233,7 +282,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
   //println!("{}",num_voltorbs_string);
 
   // print the number of multipliers
-  println!("The number of possible tables that have a multiplier in each cell:\n");
+  //println!("The number of possible tables that have a multiplier in each cell:\n");
   let mut num_multipliers_string = String::new();
   for row in 0..SIZE {
     for column in 0..SIZE
@@ -242,11 +291,11 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
       match game_board[row][column] {
         None =>
         {
-          num_multipliers_string.push_str(format!("{: >3}", num_multipliers[row][column]).as_str());
+          num_multipliers_string.push_str(format!("{: >4}", num_multipliers[row][column]).as_str());
         }
         Some(_) =>
         {
-          num_multipliers_string.push_str(format!("{: >3}", '-').as_str());
+          num_multipliers_string.push_str(format!("{: >4}", '-').as_str());
         }
       }
       num_multipliers_string.push(' ');
@@ -285,7 +334,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
       for value in cell {
         values_string.push_str(value.to_string().as_str());
       }
-      possible_values_string.push_str(format!("{: >4}", values_string).as_str());
+      possible_values_string.push_str(format!("{: >3}", values_string).as_str());
       possible_values_string.push(' ');
     }
     possible_values_string.push('\n');
