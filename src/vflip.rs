@@ -229,11 +229,11 @@ pub fn print(board: &Board) -> String
 
 
 // do useful aggregation on the boards
-pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
+pub fn aggregate(boards: &Vec<Board>, game_board: &Board, recommendation: &mut (usize, usize)) -> (String, String) {
 
   // get the number of voltorbs
-  let mut num_voltorbs = [[0;SIZE];SIZE];
-  let mut num_multipliers = [[0;SIZE];SIZE];
+  let mut num_voltorbs: [[u32;SIZE];SIZE] = [[0;SIZE];SIZE];
+  let mut num_multipliers: [[u32;SIZE];SIZE] = [[0;SIZE];SIZE];
 
   // iterate over every board in the vector
   for board in boards {
@@ -326,7 +326,7 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
   // print the possible values of every cell
   //println!("The possible values of every cell:\n");
   let mut possible_values_string = String::new();
-  for row in possible_values {
+  for row in &possible_values {
     for cell in row
     {
       // create the string of the possible values
@@ -341,6 +341,35 @@ pub fn aggregate(boards: &Vec<Board>, game_board: &Board) -> String {
   }
   //println!("{}",possible_values_string);
 
+  // find the lowest value
+  let mut lowest = u32::MAX;
+  for row in 0..SIZE {
+    for column in 0..SIZE {
+      if game_board[row][column] == None &&
+        (possible_values[row][column].contains(&2) || possible_values[row][column].contains(&3)) &&
+        num_voltorbs[row][column] < lowest {
+          recommendation.0 = row;
+          recommendation.1 = column;
+          lowest = num_voltorbs[row][column];
+      }
+    }
+  }
+
+  // print the lowest board string
+  let mut recommendation_string = String::new();
+  for row in 0..SIZE {
+    for column in 0..SIZE {
+      if row == recommendation.0 && column == recommendation.1 {
+        recommendation_string.push_str("X ");
+      }
+      else {
+        recommendation_string.push_str("- ");
+      }
+    }
+    recommendation_string.push('\n');
+  }
+
+
   // return the num_voltorbs_string
-  num_voltorbs_string
+  (num_voltorbs_string, recommendation_string)
 }

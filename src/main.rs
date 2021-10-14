@@ -14,6 +14,7 @@ const HEIGHT: usize = 20;
 const BOARD_LOC: (usize, usize) = (2,3);
 const STATUS_LOC: (usize, usize) = (2,33);
 const NEXT_LOC: (usize, usize) = (12,3);
+const REC_LOC: (usize, usize) = (12,33);
 const CURSOR_DEFAULT: (usize, usize) = (HEIGHT-1, 1);
 const QUESTION_LOC: (usize,usize) = (HEIGHT-2, 1);
 
@@ -39,8 +40,11 @@ fn main() -> Result<()>
 
     // print the voltorb status
     let mut solutions = Vec::new();
+    let mut recommendation: (usize, usize) = (usize::MAX,usize::MAX);
     vflip::solve(&right, &bottom, board, 0, 0, &mut solutions);
-    display.render(STATUS_LOC, vflip::aggregate(&solutions, &board))?;
+    let (sol_string, rec_string) = vflip::aggregate(&solutions, &board, &mut recommendation);
+    display.render(STATUS_LOC, sol_string)?;
+    display.render(REC_LOC, rec_string)?;
 
     // set data for loop
     display.set_cursor(CURSOR_DEFAULT.0, CURSOR_DEFAULT.1)?;
@@ -57,20 +61,30 @@ fn main() -> Result<()>
 
         // print the voltorb status
         let mut solutions = Vec::new();
+        let mut recommendation: (usize, usize) = (usize::MAX,usize::MAX);
         vflip::solve(&right, &bottom, board, 0, 0, &mut solutions);
-        display.render(STATUS_LOC, vflip::aggregate(&solutions, &board))?;
+        let (sol_string, rec_string) = vflip::aggregate(&solutions, &board, &mut recommendation);
+        display.render(STATUS_LOC, sol_string)?;
+        display.render(REC_LOC, rec_string)?;
+
+        
 
         // get a command from the key
         let command = display.text_command(CURSOR_DEFAULT)?;
         if command.as_str() == "quit" { break; }
-        process_command(
+        match process_command(
             &mut right,
             &mut bottom, 
             &mut board, 
             &display,
             &command,
-            &mut possibilities
-        )?;
+            &mut possibilities,
+            &recommendation
+        ) 
+        {
+            Ok(_) => {}
+            Err(_) => {}
+        };
     }
 
     Ok(())
@@ -84,7 +98,8 @@ fn process_command(
     board: &mut vflip::Board,
     display: &cmdui::UIHandle,
     command: &String,
-    possibilities: &mut String
+    possibilities: &mut String,
+    rec: &(usize, usize)
 ) -> Result<()>
 {
     // turn the command into an iterator
@@ -176,6 +191,45 @@ fn process_command(
             display.render(QUESTION_LOC, "Are you sure you want to change it? [y|n] ".to_owned())?;
             let response = display.text_command(CURSOR_DEFAULT)?;
             //println!();
+
+            // act based on response
+            match response.as_str() {
+                "y" =>
+                {
+                    // set the board
+                    *board = new_board;
+                    //println!("New board set.\n");
+                }
+                _ =>
+                {
+                    //println!("New board not set.\n");
+                }
+            }
+        }
+
+        // put a value in the recommended spot
+        "rec" =>
+        {
+            // get te value
+            let value = match command_iter.next() {
+                Some(val) => val,
+                None => { return Ok(()); }
+            }.parse::<u8>()?;
+
+            // check the value
+            if !vflip::VALS.contains(&value) {
+                display.render(CURSOR_DEFAULT,format!("Invalid Value; must be in {:?}\n", vflip::VALS))?;
+                return Ok(());
+            }
+
+            // create a new board
+            let mut new_board = *board;
+            new_board[rec.0][rec.1] = Some(value);
+
+            // ask the user if they're sure they want to change it
+            display.render(NEXT_LOC, vflip::print(&new_board))?;
+            display.render(QUESTION_LOC, "Are you sure you want to change it? [y|n] ".to_owned())?;
+            let response = display.text_command(CURSOR_DEFAULT)?;
 
             // act based on response
             match response.as_str() {
